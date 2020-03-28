@@ -1,0 +1,61 @@
+﻿<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>
+        Secure It
+    </title>
+    <style>
+        body {
+                font-family: cursive, monospace;
+        }
+        table {
+            padding-bottom: 20px;
+        }
+        form {
+            margin-left: auto;
+            margin-right: auto;
+            width: 300px;
+            margin-top: 200px;
+        }
+    </style>
+</head>
+
+<body>
+    <form method="post" action="/?simplesecure=1">
+        <h3>
+            Site Gating
+        </h3>
+        <table>
+            <tbody>
+                <tr>
+                    <td colspan="2">
+                        {{messages}}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Password:
+                    </td>
+                    <td>
+                        <input name="UserPass" type="password" id="UserPass" autocomplete="off">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Remember me?
+                    </td>
+                    <td>
+                        <input id="chkboxPersist" type="checkbox" name="chkboxPersist" {{isRemembermeDisabled}}>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <input type="hidden" id="redirectUrl" name="redirectUrl" />
+        <input type="submit" name="Submit1" value="Log In">
+        <script type="text/javascript">
+            document.getElementById('redirectUrl').value = {{return-url}};
+        </script>
+    </form>
+
+
+</body>
+</html>
