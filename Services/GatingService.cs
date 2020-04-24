@@ -77,6 +77,11 @@ namespace MadCill.BasicSiteGatingModule.Services
                     //bypass, this ip is whitelisted.
                     return;
                 }
+                else if (Configuration.IsUsingHttpHeaderBypass(Request.Headers))
+                {
+                    //bypass, this is using our configured HTTP header bypass
+                    return;
+                }
 
                 var simpleSecureCookie = Request.Cookies[Configuration.CookieName];
 

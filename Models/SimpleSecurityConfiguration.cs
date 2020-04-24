@@ -17,6 +17,8 @@ namespace MadCill.BasicSiteGatingModule.Models
         private static string ConfigurationParameter_SecurityType = "SimpleSecurity.SecurityType";
         private static string ConfigurationParameter_EncryptionKey = "SimpleSecurity.EncryptionKey";
         private static string ConfigurationParameter_EncryptionIV = "SimpleSecurity.EncryptionIV";
+        private static string ConfigurationParameter_HttpHeaderParameter = "SimpleSecurity.HttpHeaderParameter";
+        private static string ConfigurationParameter_HttpHeaderCode = "SimpleSecurity.HttpHeaderCode";
 
         private static string DefaultPassword = "!password";
         private static string DefaultCookieName = "SimpleSecurity";
@@ -27,9 +29,18 @@ namespace MadCill.BasicSiteGatingModule.Models
             CookieName = GetAppSetting(appSettings, ConfigurationParameter_CookieName, DefaultCookieName);
             EncryptionKey = GetAppSetting(appSettings, ConfigurationParameter_EncryptionKey);
             EncryptionIV = GetAppSetting(appSettings, ConfigurationParameter_EncryptionIV);
+            HttpHeaderParameter = GetAppSetting(appSettings, ConfigurationParameter_HttpHeaderParameter);
+            HttpHeaderCode = GetAppSetting(appSettings, ConfigurationParameter_HttpHeaderCode);
             _ipWhitelist = GetAppSetting(appSettings, ConfigurationParameter_IPWhitelist, "").Split(';').Select(x => x.Trim()).ToArray();
             SessionLifetime = int.Parse(GetAppSetting(appSettings, ConfigurationParameter_SessionLifetime, "0"));
-            SecurityType = (SupportedSecurityType)Enum.Parse(typeof(SupportedSecurityType), GetAppSetting(appSettings, ConfigurationParameter_SecurityType, SupportedSecurityType.Hashed.ToString()));
+            try
+            {
+                SecurityType = (SupportedSecurityType)Enum.Parse(typeof(SupportedSecurityType), GetAppSetting(appSettings, ConfigurationParameter_SecurityType, SupportedSecurityType.Hashed.ToString()));
+            }
+            catch(Exception ex)
+            {
+                SecurityType = SupportedSecurityType.Hashed;
+            }
         }
 
         private string GetAppSetting(NameValueCollection appSettings, string key, string defaultValue = null)
@@ -44,6 +55,10 @@ namespace MadCill.BasicSiteGatingModule.Models
         public string EncryptionKey { get; private set; }
 
         public string EncryptionIV { get; private set; }
+
+        public string HttpHeaderParameter { get; private set; }
+
+        public string HttpHeaderCode { get; private set; }
 
         public string CookieName { get; private set; }
 
@@ -61,6 +76,19 @@ namespace MadCill.BasicSiteGatingModule.Models
                         return true;
                     }
                 }
+            }
+
+            return false;
+        }
+
+        public bool IsUsingHttpHeaderBypass(NameValueCollection httpHeaders)
+        {
+            if(!string.IsNullOrEmpty(HttpHeaderParameter) 
+                && !string.IsNullOrEmpty(HttpHeaderCode)
+                && httpHeaders.AllKeys.Contains(HttpHeaderParameter)
+                && httpHeaders[HttpHeaderParameter] == HttpHeaderCode)
+            {
+                return true;
             }
 
             return false;

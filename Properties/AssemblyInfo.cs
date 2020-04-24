@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("JamesBarrow.BasicSiteGatingModule")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("MadCill.BasicSiteGatingModule")]
+[assembly: AssemblyDescription("A simple site gating module for use in staging environments.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("HP Inc.")]
-[assembly: AssemblyProduct("JamesBarrow.BasicSiteGatingModule")]
+[assembly: AssemblyCompany("MadCill")]
+[assembly: AssemblyProduct("MadCill.BasicSiteGatingModule")]
 [assembly: AssemblyCopyright("Copyright © James Barrow 2020")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
