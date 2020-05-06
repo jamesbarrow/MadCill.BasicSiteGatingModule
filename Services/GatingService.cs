@@ -99,6 +99,9 @@ namespace MadCill.BasicSiteGatingModule.Services
             try
             {
                 Response.ContentType = "text/html";
+                Response.StatusCode = 500;
+                Response.StatusDescription = "The resource gating has encountered an error. The resource will remain gated to protect assets until the issue is resolved.";
+                Response.Status = "Internal Server Error (gating)";
                 Response.Write(HtmlService.ErrorHtml(messages));               
             }
             catch(Exception ex)
@@ -117,6 +120,9 @@ namespace MadCill.BasicSiteGatingModule.Services
         {
             var redirectUrl = Request.Form[RedirectParamName];
             Response.ContentType = "text/html";
+            //Response.StatusCode = 401;
+            //Response.StatusDescription = "This resource is gated. Please enter the password for access";
+            //Response.Status = "Forbidden";
             Response.Write(HtmlService.LoginHtml(messages, (Configuration.SessionLifetime > 0), redirectUrl));
 
             if (endResponse)
