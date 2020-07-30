@@ -77,7 +77,13 @@ namespace MadCill.BasicSiteGatingModule.Services
                     //bypass, this ip is whitelisted.
                     return;
                 }
-                else if (Configuration.IsUsingHttpHeaderBypass(Request.Headers))
+                //check for ip-whitelist
+                if (Configuration.IsUrlWhitelisted(Request.Url))
+                {
+                    //bypass, this url is whitelisted.
+                    return;
+                }
+                if (Configuration.IsUsingHttpHeaderBypass(Request.Headers))
                 {
                     //bypass, this is using our configured HTTP header bypass
                     return;

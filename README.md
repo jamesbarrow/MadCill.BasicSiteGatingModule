@@ -16,6 +16,8 @@ MadCill.BasicSiteGatingModule.dll
 <add key="SimpleSecurity.SessionLifetime" value="0" />
 <!--Add in ip addresses, no ports, separate them by a semi-colon ';'-->
 <add key="SimpleSecurity.IPWhitelist" value="0" />
+<!--Add in relative url addresses separate them by a semi-colon ';'-->
+<add key="SimpleSecurity.UrlWhitelist" value="/unicorn.aspx" />
 <!--Types are "Hashed" or "SimpleEncryption" note "SimpleEncryption" requires an encryption key and iv-->
 <add key="SimpleSecurity.SecurityType" value="Hashed" />
 <!--If using SimpleEncryption provide an 8 character key-->

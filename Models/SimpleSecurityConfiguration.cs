@@ -19,6 +19,7 @@ namespace MadCill.BasicSiteGatingModule.Models
         private static string ConfigurationParameter_EncryptionIV = "SimpleSecurity.EncryptionIV";
         private static string ConfigurationParameter_HttpHeaderParameter = "SimpleSecurity.HttpHeaderParameter";
         private static string ConfigurationParameter_HttpHeaderCode = "SimpleSecurity.HttpHeaderCode";
+        private static string ConfigurationParameter_UrlWhitelist = "SimpleSecurity.UrlWhitelist";
 
         private static string DefaultPassword = "!password";
         private static string DefaultCookieName = "SimpleSecurity";
@@ -32,6 +33,7 @@ namespace MadCill.BasicSiteGatingModule.Models
             HttpHeaderParameter = GetAppSetting(appSettings, ConfigurationParameter_HttpHeaderParameter);
             HttpHeaderCode = GetAppSetting(appSettings, ConfigurationParameter_HttpHeaderCode);
             _ipWhitelist = GetAppSetting(appSettings, ConfigurationParameter_IPWhitelist, "").Split(';').Select(x => x.Trim()).ToArray();
+            _urlWhitelist = GetAppSetting(appSettings, ConfigurationParameter_UrlWhitelist, "").Split(';').Select(x => x.Trim()).ToArray();
             SessionLifetime = int.Parse(GetAppSetting(appSettings, ConfigurationParameter_SessionLifetime, "0"));
             try
             {
@@ -66,13 +68,25 @@ namespace MadCill.BasicSiteGatingModule.Models
 
         public bool IsIPWhitelisted(string ipAddress)
         {
-            if (!string.IsNullOrEmpty(ipAddress))
+            return IsWhitelisted(_ipWhitelist, ipAddress);
+        }
+
+        private string[] _urlWhitelist;
+
+        public bool IsUrlWhitelisted(Uri url)
+        {
+            return IsWhitelisted(_urlWhitelist, url?.LocalPath);
+        }
+
+        private static bool IsWhitelisted(string[] whitelist, string value)
+        {
+            if (!string.IsNullOrEmpty(value))
             {
-                if (_ipWhitelist.Length > 0)
+                if (whitelist.Length > 0)
                 {
-                    if (_ipWhitelist.Any(x => x == ipAddress))
+                    if (whitelist.Any(x => x == value))
                     {
-                        //bypass check for IP addresses
+                        //bypass check for whitelist
                         return true;
                     }
                 }
