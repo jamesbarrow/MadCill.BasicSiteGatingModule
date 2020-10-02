@@ -71,6 +71,12 @@ namespace MadCill.BasicSiteGatingModule.Services
             }
             else
             {
+				//check for domain-whitelist
+				if (Configuration.IsDomainWhitelisted(Request.Url))
+				{
+					// bypass, this domain is whitelisted
+					return;
+				}
                 //check for ip-whitelist
                 if (Configuration.IsIPWhitelisted(GetIPAddress(Request)))
                 {

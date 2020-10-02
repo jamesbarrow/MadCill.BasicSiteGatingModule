@@ -20,8 +20,9 @@ namespace MadCill.BasicSiteGatingModule.Models
         private static string ConfigurationParameter_HttpHeaderParameter = "SimpleSecurity.HttpHeaderParameter";
         private static string ConfigurationParameter_HttpHeaderCode = "SimpleSecurity.HttpHeaderCode";
         private static string ConfigurationParameter_UrlWhitelist = "SimpleSecurity.UrlWhitelist";
+		private static string ConfigurationParameter_DomainWhitelist = "SimpleSecurity.DomainWhitelist";
 
-        private static string DefaultPassword = "!password";
+		private static string DefaultPassword = "!password";
         private static string DefaultCookieName = "SimpleSecurity";
 
         public SimpleSecurityConfiguration(NameValueCollection appSettings)
@@ -34,7 +35,8 @@ namespace MadCill.BasicSiteGatingModule.Models
             HttpHeaderCode = GetAppSetting(appSettings, ConfigurationParameter_HttpHeaderCode);
             _ipWhitelist = GetAppSetting(appSettings, ConfigurationParameter_IPWhitelist, "").Split(';').Select(x => x.Trim()).ToArray();
             _urlWhitelist = GetAppSetting(appSettings, ConfigurationParameter_UrlWhitelist, "").Split(';').Select(x => x.Trim()).ToArray();
-            SessionLifetime = int.Parse(GetAppSetting(appSettings, ConfigurationParameter_SessionLifetime, "0"));
+			_domainWhitelist = GetAppSetting(appSettings, ConfigurationParameter_DomainWhitelist, "").Split(';').Select(x => x.Trim()).ToArray();
+			SessionLifetime = int.Parse(GetAppSetting(appSettings, ConfigurationParameter_SessionLifetime, "0"));
             try
             {
                 SecurityType = (SupportedSecurityType)Enum.Parse(typeof(SupportedSecurityType), GetAppSetting(appSettings, ConfigurationParameter_SecurityType, SupportedSecurityType.Hashed.ToString()));
@@ -78,7 +80,14 @@ namespace MadCill.BasicSiteGatingModule.Models
             return IsWhitelisted(_urlWhitelist, url?.LocalPath);
         }
 
-        private static bool IsWhitelisted(string[] whitelist, string value)
+		private string[] _domainWhitelist;
+
+		public bool IsDomainWhitelisted(Uri url)
+		{
+			return IsWhitelisted(_domainWhitelist, url?.Host);
+		}
+
+		private static bool IsWhitelisted(string[] whitelist, string value)
         {
             if (!string.IsNullOrEmpty(value))
             {
