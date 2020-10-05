@@ -25,6 +25,11 @@ namespace MadCill.BasicSiteGatingModule.Models
 		private static string DefaultPassword = "!password";
         private static string DefaultCookieName = "SimpleSecurity";
 
+        //whitelist configuration lists
+        private string[] _ipWhitelist;
+        private string[] _urlWhitelist;
+        private string[] _domainWhitelist;
+
         public SimpleSecurityConfiguration(NameValueCollection appSettings)
         {
             ConfiguredPassword = GetAppSetting(appSettings, ConfigurationParameter_Password, DefaultPassword);
@@ -33,9 +38,9 @@ namespace MadCill.BasicSiteGatingModule.Models
             EncryptionIV = GetAppSetting(appSettings, ConfigurationParameter_EncryptionIV);
             HttpHeaderParameter = GetAppSetting(appSettings, ConfigurationParameter_HttpHeaderParameter);
             HttpHeaderCode = GetAppSetting(appSettings, ConfigurationParameter_HttpHeaderCode);
-            _ipWhitelist = GetAppSetting(appSettings, ConfigurationParameter_IPWhitelist, "").Split(';').Select(x => x.Trim()).ToArray();
-            _urlWhitelist = GetAppSetting(appSettings, ConfigurationParameter_UrlWhitelist, "").Split(';').Select(x => x.Trim()).ToArray();
-			_domainWhitelist = GetAppSetting(appSettings, ConfigurationParameter_DomainWhitelist, "").Split(';').Select(x => x.Trim()).ToArray();
+            _ipWhitelist = GetAppSettingList(appSettings, ConfigurationParameter_IPWhitelist);
+            _urlWhitelist = GetAppSettingList(appSettings, ConfigurationParameter_UrlWhitelist);
+            _domainWhitelist = GetAppSettingList(appSettings, ConfigurationParameter_DomainWhitelist);
 			SessionLifetime = int.Parse(GetAppSetting(appSettings, ConfigurationParameter_SessionLifetime, "0"));
             try
             {
@@ -52,6 +57,11 @@ namespace MadCill.BasicSiteGatingModule.Models
             return appSettings.AllKeys.Contains(key) ? appSettings[key] : defaultValue;
         }
 
+        private string[] GetAppSettingList(NameValueCollection appSettings, string key, char separator = ';')
+        {
+            return GetAppSetting(appSettings, key, "").Split(separator).Select(x => x.Trim()).ToArray();
+        }
+
         public SupportedSecurityType SecurityType { get; private set; }
 
         public string ConfiguredPassword { get; private set; }
@@ -66,25 +76,20 @@ namespace MadCill.BasicSiteGatingModule.Models
 
         public string CookieName { get; private set; }
 
-        private string[] _ipWhitelist;
-
         public bool IsIPWhitelisted(string ipAddress)
         {
             return IsWhitelisted(_ipWhitelist, ipAddress);
         }
-
-        private string[] _urlWhitelist;
 
         public bool IsUrlWhitelisted(Uri url)
         {
             return IsWhitelisted(_urlWhitelist, url?.LocalPath);
         }
 
-		private string[] _domainWhitelist;
-
 		public bool IsDomainWhitelisted(Uri url)
 		{
-			return IsWhitelisted(_domainWhitelist, url?.Host);
+            //if the domain isn't set then allow all domains
+			return _domainWhitelist == null || _domainWhitelist.Length == 0 || IsWhitelisted(_domainWhitelist, url?.Host);
 		}
 
 		private static bool IsWhitelisted(string[] whitelist, string value)
