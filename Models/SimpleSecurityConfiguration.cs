@@ -25,11 +25,6 @@ namespace MadCill.BasicSiteGatingModule.Models
 		private static string DefaultPassword = "!password";
         private static string DefaultCookieName = "SimpleSecurity";
 
-        //whitelist configuration lists
-        private string[] _ipWhitelist;
-        private string[] _urlWhitelist;
-        private string[] _domainWhitelist;
-
         public SimpleSecurityConfiguration(NameValueCollection appSettings)
         {
             ConfiguredPassword = GetAppSetting(appSettings, ConfigurationParameter_Password, DefaultPassword);
@@ -76,20 +71,25 @@ namespace MadCill.BasicSiteGatingModule.Models
 
         public string CookieName { get; private set; }
 
+        private string[] _ipWhitelist;
+
         public bool IsIPWhitelisted(string ipAddress)
         {
             return IsWhitelisted(_ipWhitelist, ipAddress);
         }
+
+        private string[] _urlWhitelist;
 
         public bool IsUrlWhitelisted(Uri url)
         {
             return IsWhitelisted(_urlWhitelist, url?.LocalPath);
         }
 
+		private string[] _domainWhitelist;
+
 		public bool IsDomainWhitelisted(Uri url)
 		{
-            //if the domain isn't set then allow all domains
-			return _domainWhitelist == null || _domainWhitelist.Length == 0 || IsWhitelisted(_domainWhitelist, url?.Host);
+			return IsWhitelisted(_domainWhitelist, url?.Host);
 		}
 
 		private static bool IsWhitelisted(string[] whitelist, string value)
