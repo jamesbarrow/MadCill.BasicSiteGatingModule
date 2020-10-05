@@ -14,6 +14,8 @@ MadCill.BasicSiteGatingModule.dll
     <add key="SimpleSecurity.Password" value="!password" />
     <add key="SimpleSecurity.CookieName" value="SimpleGating" />
     <add key="SimpleSecurity.SessionLifetime" value="0" />
+	<!--Add in domain names, separate them by a semi-colon ';'-->
+    <add key="SimpleSecurity.DomainWhitelist" value="www.domain1.com;www.domain2.com" />
     <!--Add in ip addresses, no ports, separate them by a semi-colon ';'-->
     <add key="SimpleSecurity.IPWhitelist" value="0" />
     <!--Add in relative url addresses separate them by a semi-colon ';'-->
