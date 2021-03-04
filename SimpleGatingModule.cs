@@ -1,13 +1,5 @@
-﻿using MadCill.BasicSiteGatingModule.Models;
-using MadCill.BasicSiteGatingModule.Services;
+﻿using MadCill.BasicSiteGatingModule.Services;
 using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web;
 
 namespace MadCill.BasicSiteGatingModule
@@ -25,7 +17,7 @@ namespace MadCill.BasicSiteGatingModule
             }
             catch(Exception ex)
             {
-
+                //in order to remain less invasive, nothing will be rendered here!
             }
         }
 
@@ -43,30 +35,6 @@ namespace MadCill.BasicSiteGatingModule
         {
             //Write your custom code here to dispose any objects if needed
         }
-
-        //public void OnLogRequest(object sender, EventArgs e)
-        //{
-        //    HttpContext context = ((HttpApplication)sender).Context;
-        //    var path = context.Server.MapPath(@"~\App_Data\SimpleSecurity.txt");
-
-        //    try
-        //    {
-        //        using (StreamWriter streamWriter = new StreamWriter(path))
-        //        {
-        //            streamWriter.WriteLine(context.Request.Path);
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        //
-        //    }
-        //}
-        //public void OnEndRequest(object sender, EventArgs e)
-        //{
-        //    HttpContext context = ((HttpApplication)sender).Context;
-        //    //Write your custom code here
-
-        //}
 
         #endregion
 

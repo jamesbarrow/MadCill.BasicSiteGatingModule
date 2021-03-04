@@ -1,11 +1,8 @@
 ﻿using MadCill.BasicSiteGatingModule.Models;
 using MadCill.BasicSiteGatingModule.Secure;
 using System;
-using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web;
 
 namespace MadCill.BasicSiteGatingModule.Services
@@ -131,11 +128,14 @@ namespace MadCill.BasicSiteGatingModule.Services
         private void LoginResponse(string messages, bool endResponse = true)
         {
             var redirectUrl = Request.Form[RedirectParamName];
+            //only allow relative URL's to redirect.
+            if (string.IsNullOrEmpty(redirectUrl) || !redirectUrl.StartsWith("/"))
+            {
+                redirectUrl = "/";
+            }
             Response.ContentType = "text/html";
-            //Response.StatusCode = 401;
-            //Response.StatusDescription = "This resource is gated. Please enter the password for access";
-            //Response.Status = "Forbidden";
-            Response.Write(HtmlService.LoginHtml(messages, (Configuration.SessionLifetime > 0), redirectUrl));
+            
+            Response.Write(HtmlService.LoginHtml(messages, (Configuration.SessionLifetime > 0), Configuration.MapCustomLoginPath(Request), redirectUrl));
 
             if (endResponse)
             {

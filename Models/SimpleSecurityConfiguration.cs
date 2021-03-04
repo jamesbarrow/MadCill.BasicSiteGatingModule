@@ -1,15 +1,13 @@
-﻿using MadCill.BasicSiteGatingModule.Secure;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Collections.Specialized;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Web;
 
 namespace MadCill.BasicSiteGatingModule.Models
 {
     public class SimpleSecurityConfiguration
     {
+        private static string ConfigurationParameter_CustomLogin = "SimpleSecurity.CustomLoginHtml";
         private static string ConfigurationParameter_Password = "SimpleSecurity.Password";
         private static string ConfigurationParameter_CookieName = "SimpleSecurity.CookieName";
         private static string ConfigurationParameter_SessionLifetime = "SimpleSecurity.SessionLifetime";
@@ -27,6 +25,7 @@ namespace MadCill.BasicSiteGatingModule.Models
 
         public SimpleSecurityConfiguration(NameValueCollection appSettings)
         {
+            CustomLoginPath = GetAppSetting(appSettings, ConfigurationParameter_CustomLogin, string.Empty);
             ConfiguredPassword = GetAppSetting(appSettings, ConfigurationParameter_Password, DefaultPassword);
             CookieName = GetAppSetting(appSettings, ConfigurationParameter_CookieName, DefaultCookieName);
             EncryptionKey = GetAppSetting(appSettings, ConfigurationParameter_EncryptionKey);
@@ -58,6 +57,18 @@ namespace MadCill.BasicSiteGatingModule.Models
         }
 
         public SupportedSecurityType SecurityType { get; private set; }
+
+        private string CustomLoginPath { get; set; }
+
+        public string MapCustomLoginPath(HttpRequest request)
+        {
+            if (!string.IsNullOrEmpty(CustomLoginPath)){
+                return request.MapPath(CustomLoginPath);
+            }
+
+            return string.Empty;
+        }
+        
 
         public string ConfiguredPassword { get; private set; }
 

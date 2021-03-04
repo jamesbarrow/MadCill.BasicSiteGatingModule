@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MadCill.BasicSiteGatingModule.Services
 {
@@ -15,10 +11,29 @@ namespace MadCill.BasicSiteGatingModule.Services
         private static string MessagesToken = "{{messages}}";
         private static string RememberMeToken = "{{isRemembermeDisabled}}";
 
+        public string LoginHtml(string messages, bool allowLifetime, string customHtmlPath, string returnUrl = null)
+        {
+            string html = string.Empty;
+            if (!string.IsNullOrEmpty(customHtmlPath) && File.Exists(customHtmlPath))
+            {
+                html = File.ReadAllText(customHtmlPath);
+            }
+            else
+            {//fallback
+                return LoginHtml(messages, allowLifetime, returnUrl);
+            }
+
+            return BuildLoginHtml(html, messages, allowLifetime, returnUrl);
+        }
+
         public string LoginHtml(string messages, bool allowLifetime, string returnUrl = null)
         {
             var html = GetResource(HtmlLoginResourceName);
+            return BuildLoginHtml(html, messages, allowLifetime, returnUrl);
+        }
 
+        public string BuildLoginHtml(string html, string messages, bool allowLifetime, string returnUrl = null)
+        {
             if (!string.IsNullOrEmpty(html))
             {
                 html = html.Replace(MessagesToken, messages)
@@ -33,7 +48,7 @@ namespace MadCill.BasicSiteGatingModule.Services
 
         public string ErrorHtml(string error)
         {
-            var html = GetResource(HtmlLoginResourceName);
+            var html = GetResource(HtmlErrorResourceName);
 
             if (!string.IsNullOrEmpty(html))
             {
