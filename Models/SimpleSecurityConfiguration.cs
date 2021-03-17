@@ -18,9 +18,9 @@ namespace MadCill.BasicSiteGatingModule.Models
         private static string ConfigurationParameter_HttpHeaderParameter = "SimpleSecurity.HttpHeaderParameter";
         private static string ConfigurationParameter_HttpHeaderCode = "SimpleSecurity.HttpHeaderCode";
         private static string ConfigurationParameter_UrlWhitelist = "SimpleSecurity.UrlWhitelist";
-		private static string ConfigurationParameter_DomainWhitelist = "SimpleSecurity.DomainWhitelist";
+        private static string ConfigurationParameter_DomainWhitelist = "SimpleSecurity.DomainWhitelist";
 
-		private static string DefaultPassword = "!password";
+        private static string DefaultPassword = "!password";
         private static string DefaultCookieName = "SimpleSecurity";
 
         public SimpleSecurityConfiguration(NameValueCollection appSettings)
@@ -32,15 +32,15 @@ namespace MadCill.BasicSiteGatingModule.Models
             EncryptionIV = GetAppSetting(appSettings, ConfigurationParameter_EncryptionIV);
             HttpHeaderParameter = GetAppSetting(appSettings, ConfigurationParameter_HttpHeaderParameter);
             HttpHeaderCode = GetAppSetting(appSettings, ConfigurationParameter_HttpHeaderCode);
-            _ipWhitelist = GetAppSettingList(appSettings, ConfigurationParameter_IPWhitelist);
-            _urlWhitelist = GetAppSettingList(appSettings, ConfigurationParameter_UrlWhitelist);
-            _domainWhitelist = GetAppSettingList(appSettings, ConfigurationParameter_DomainWhitelist);
-			SessionLifetime = int.Parse(GetAppSetting(appSettings, ConfigurationParameter_SessionLifetime, "0"));
+            IpWhitelist = GetAppSettingList(appSettings, ConfigurationParameter_IPWhitelist);
+            UrlWhitelist = GetAppSettingList(appSettings, ConfigurationParameter_UrlWhitelist);
+            DomainWhitelist = GetAppSettingList(appSettings, ConfigurationParameter_DomainWhitelist);
+            SessionLifetime = int.Parse(GetAppSetting(appSettings, ConfigurationParameter_SessionLifetime, "0"));
             try
             {
                 SecurityType = (SupportedSecurityType)Enum.Parse(typeof(SupportedSecurityType), GetAppSetting(appSettings, ConfigurationParameter_SecurityType, SupportedSecurityType.Hashed.ToString()));
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 SecurityType = SupportedSecurityType.Hashed;
             }
@@ -62,13 +62,14 @@ namespace MadCill.BasicSiteGatingModule.Models
 
         public string MapCustomLoginPath(HttpRequest request)
         {
-            if (!string.IsNullOrEmpty(CustomLoginPath)){
+            if (!string.IsNullOrEmpty(CustomLoginPath))
+            {
                 return request.MapPath(CustomLoginPath);
             }
 
             return string.Empty;
         }
-        
+
 
         public string ConfiguredPassword { get; private set; }
 
@@ -82,28 +83,68 @@ namespace MadCill.BasicSiteGatingModule.Models
 
         public string CookieName { get; private set; }
 
-        private string[] _ipWhitelist;
+        private string[] IpWhitelist;
 
         public bool IsIPWhitelisted(string ipAddress)
         {
-            return IsWhitelisted(_ipWhitelist, ipAddress);
+            return IsWhitelisted(IpWhitelist, ipAddress);
         }
 
         private string[] _urlWhitelist;
+        private string[] _urlWildcardWhitelist;
+
+        private string[] UrlWhitelist
+        {
+            set
+            {
+                if (value != null && value.Length > 0)
+                {
+                    //select wildcards
+                    var wildcards = value.Where(x => x[x.Length - 1] == '~');
+                    if (wildcards.Any())
+                    {
+                        _urlWildcardWhitelist = wildcards.Select(x => x.Substring(0, x.Length - 1)).ToArray();
+                    }
+
+                    _urlWhitelist = value.Where(x => x[x.Length - 1] != '~').ToArray();
+                }
+                else
+                {
+                    _urlWhitelist = new string[0];
+                    _urlWildcardWhitelist = new string[0];
+                }
+            }
+        }
 
         public bool IsUrlWhitelisted(Uri url)
         {
-            return IsWhitelisted(_urlWhitelist, url?.LocalPath);
+            var path = url?.LocalPath;
+
+            if (!string.IsNullOrEmpty(path))
+            {
+                if (_urlWhitelist.Length > 0)
+                {
+                    if(IsWhitelisted(_urlWhitelist, path))
+                    {
+                        return true;
+                    }
+
+                    //check for wildcards
+                    return _urlWildcardWhitelist.Any(x => path.StartsWith(x));
+                }
+            }
+
+            return false;
         }
 
-		private string[] _domainWhitelist;
+        private string[] DomainWhitelist;
 
-		public bool IsDomainWhitelisted(Uri url)
-		{
-			return IsWhitelisted(_domainWhitelist, url?.Host);
-		}
+        public bool IsDomainWhitelisted(Uri url)
+        {
+            return IsWhitelisted(DomainWhitelist, url?.Host);
+        }
 
-		private static bool IsWhitelisted(string[] whitelist, string value)
+        private static bool IsWhitelisted(string[] whitelist, string value)
         {
             if (!string.IsNullOrEmpty(value))
             {
@@ -122,7 +163,7 @@ namespace MadCill.BasicSiteGatingModule.Models
 
         public bool IsUsingHttpHeaderBypass(NameValueCollection httpHeaders)
         {
-            if(!string.IsNullOrEmpty(HttpHeaderParameter) 
+            if (!string.IsNullOrEmpty(HttpHeaderParameter)
                 && !string.IsNullOrEmpty(HttpHeaderCode)
                 && httpHeaders.AllKeys.Contains(HttpHeaderParameter)
                 && httpHeaders[HttpHeaderParameter] == HttpHeaderCode)

@@ -18,7 +18,8 @@ MadCill.BasicSiteGatingModule.dll
     <add key="SimpleSecurity.DomainWhitelist" value="www.domain1.com;www.domain2.com" />
     <!--Add in ip addresses, no ports, separate them by a semi-colon ';'-->
     <add key="SimpleSecurity.IPWhitelist" value="0" />
-    <!--Add in relative url addresses separate them by a semi-colon ';'-->
+    <!--Add in relative url addresses separate them by a semi-colon ';'. Wildcards can be used to ungate sub pages or relative paths
+    If you want to ungate a specific page you may also need to ungate tracking and media, i.e. /yourpage;/layouts/system/~;/-/media/~ -->
     <add key="SimpleSecurity.UrlWhitelist" value="/unicorn.aspx" />
     <!--Types are "Hashed" or "SimpleEncryption" note "SimpleEncryption" requires an encryption key and iv-->
     <add key="SimpleSecurity.SecurityType" value="Hashed" />
@@ -31,5 +32,5 @@ MadCill.BasicSiteGatingModule.dll
     <!--If using SimpleEncryption provide an 8 character iv-->
     <add key="SimpleSecurity.HttpHeaderCode" value="testing" />
     <!--If a custom login page is required - this can be provided here. Not included here will default to the basic gating page.-->
-    <add key="SimpleSecurity.CustomLoginHtml" value="/App_Data/SiteGating/CustomGatingPage.html" />
+    <add key="SimpleSecurity.CustomLoginHtml" value="/App_Data/SiteGating/CustomGatingPage.html" />$
     <!--END Simple Gating Section-->
