@@ -130,7 +130,10 @@ namespace MadCill.BasicSiteGatingModule.Models
                     }
 
                     //check for wildcards
-                    return _urlWildcardWhitelist.Any(x => path.StartsWith(x));
+                    if (_urlWildcardWhitelist != null && _urlWildcardWhitelist.Length > 0)
+                    {
+                        return _urlWildcardWhitelist.Any(x => path.StartsWith(x));
+                    }
                 }
             }
 
