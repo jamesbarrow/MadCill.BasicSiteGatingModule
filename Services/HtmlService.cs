@@ -9,6 +9,7 @@ namespace MadCill.BasicSiteGatingModule.Services
         private static string HtmlLoginResourceName = "MadCill.BasicSiteGatingModule.Html.login.html";
         private static string HtmlErrorResourceName = "MadCill.BasicSiteGatingModule.Html.error.html";
         private static string MessagesToken = "{{messages}}";
+        private static string FormCSSClassToken = "{{form-css-token}}";
         private static string RememberMeToken = "{{isRemembermeDisabled}}";
 
         public string LoginHtml(string messages, bool allowLifetime, string customHtmlPath, string returnUrl = null)
@@ -37,6 +38,7 @@ namespace MadCill.BasicSiteGatingModule.Services
             if (!string.IsNullOrEmpty(html))
             {
                 html = html.Replace(MessagesToken, messages)
+                    .Replace(FormCSSClassToken, string.IsNullOrEmpty(messages) ? string.Empty : "gating-has-messages")
                     .Replace(RememberMeToken, (allowLifetime ? "" : "disabled"))
                     .Replace("{{return-url}}", (string.IsNullOrEmpty(returnUrl) ? "window.location.href" : $"'{returnUrl}'"));
 

@@ -31,6 +31,8 @@ MadCill.BasicSiteGatingModule.dll
     <add key="SimpleSecurity.HttpHeaderParameter" value="bypass-gating" />
     <!--If using SimpleEncryption provide an 8 character iv-->
     <add key="SimpleSecurity.HttpHeaderCode" value="testing" />
-    <!--If a custom login page is required - this can be provided here. Not included here will default to the basic gating page.-->
-    <add key="SimpleSecurity.CustomLoginHtml" value="/App_Data/SiteGating/CustomGatingPage.html" />$
+    <!--If a custom login page is required - this can be provided here. Not included here will default to the basic gating page. -->
+    <add key="SimpleSecurity.CustomLoginHtml" value="/App_Data/SiteGating/CustomGatingPage.html" />
+    <!--OR Separating it in a {domain}|{path to login};{domain}|{path to login};{default login page} will allow a login page per domain
+    <add key="SimpleSecurity.CustomLoginHtml" value="domain1.com|/LoginPage1.html;domain2.com|/LoginPage2.html;/LoginPage1.html" />-->
     <!--END Simple Gating Section-->
