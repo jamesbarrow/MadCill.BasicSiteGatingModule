@@ -99,7 +99,9 @@ namespace MadCill.BasicSiteGatingModule.Models
                 {
                     string path = CustomLoginPath.ContainsKey(domainName) ? 
                         CustomLoginPath[domainName] 
-                        : CustomLoginPath[DefaultDictionaryKey];
+                        : CustomLoginPath.ContainsKey(DefaultDictionaryKey) ? 
+                            CustomLoginPath[DefaultDictionaryKey] 
+                            : string.Empty;
 
                     if (!string.IsNullOrEmpty(path))
                     {

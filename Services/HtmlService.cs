@@ -21,13 +21,13 @@ namespace MadCill.BasicSiteGatingModule.Services
             }
             else
             {//fallback
-                return LoginHtml(messages, allowLifetime, returnUrl);
+                return LoginDefaultHtml(messages, allowLifetime, returnUrl);
             }
 
             return BuildLoginHtml(html, messages, allowLifetime, returnUrl);
         }
 
-        public string LoginHtml(string messages, bool allowLifetime, string returnUrl = null)
+        public string LoginDefaultHtml(string messages, bool allowLifetime, string returnUrl = null)
         {
             var html = GetResource(HtmlLoginResourceName);
             return BuildLoginHtml(html, messages, allowLifetime, returnUrl);
