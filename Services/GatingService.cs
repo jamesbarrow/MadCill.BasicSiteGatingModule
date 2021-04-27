@@ -41,29 +41,25 @@ namespace MadCill.BasicSiteGatingModule.Services
         {
             if (Request.HttpMethod == "POST")
             {
-                if (Request.QueryString.AllKeys.Contains(PostQueryString) && Request.QueryString[PostQueryString] == "1")
+                var rememberMe = Request.Form[RememberMeParamName] == "1";
+                var password = Request.Form[UserPasswordParamName];
+                //clear password check
+                if (password == Configuration.ConfiguredPassword)
                 {
-                    var redirectUrl = Request.Form[RedirectParamName];
-                    var rememberMe = Request.Form[RememberMeParamName] == "1";
-                    var password = Request.Form[UserPasswordParamName];
-                    //clear password check
-                    if (password == Configuration.ConfiguredPassword)
+                    var encryptedPassword = EncryptionService.Encrypt(Configuration.ConfiguredPassword);
+                    var cookie = new HttpCookie(Configuration.CookieName) { Value = encryptedPassword, HttpOnly = false, Secure = Request.IsSecureConnection };
+                    if (Configuration.SessionLifetime > 0
+                        && rememberMe
+                        && Configuration.SessionLifetime < 365)
                     {
-                        var encryptedPassword = EncryptionService.Encrypt(Configuration.ConfiguredPassword);
-                        var cookie = new HttpCookie(Configuration.CookieName) { Value = encryptedPassword, HttpOnly = false, Secure = Request.IsSecureConnection };
-                        if (Configuration.SessionLifetime > 0
-                            && rememberMe
-                            && Configuration.SessionLifetime < 365)
-                        {
-                            cookie.Expires = DateTime.Now.AddDays(Configuration.SessionLifetime);
-                        }
-                        Response.Cookies.Add(cookie);
-                        Response.Redirect(redirectUrl ?? "/");
+                        cookie.Expires = DateTime.Now.AddDays(Configuration.SessionLifetime);
                     }
-                    else
-                    {
-                        LoginResponse(ErrorMessage);
-                    }
+                    Response.Cookies.Add(cookie);
+                    Response.Redirect(Request.RawUrl);
+                }
+                else
+                {
+                    LoginResponse(ErrorMessage);
                 }
             }
             else
@@ -127,15 +123,9 @@ namespace MadCill.BasicSiteGatingModule.Services
 
         private void LoginResponse(string messages, bool endResponse = true)
         {
-            var redirectUrl = Request.Form[RedirectParamName];
-            //only allow relative URL's to redirect.
-            if (string.IsNullOrEmpty(redirectUrl) || !redirectUrl.StartsWith("/"))
-            {
-                redirectUrl = "/";
-            }
             Response.ContentType = "text/html";
             
-            Response.Write(HtmlService.LoginHtml(messages, (Configuration.SessionLifetime > 0), Configuration.MapCustomLoginPath(Request), redirectUrl));
+            Response.Write(HtmlService.LoginHtml(messages, (Configuration.SessionLifetime > 0), Configuration.MapCustomLoginPath(Request)));
 
             if (endResponse)
             {

@@ -20,7 +20,7 @@
 </head>
 
 <body>
-    <form method="post" action="/?simplesecure=1" class="{{gating-has-messages}}">
+    <form method="post" class="{{gating-has-messages}}">
         <h3>
             Site Gating
         </h3>
@@ -49,11 +49,7 @@
                 </tr>
             </tbody>
         </table>
-        <input type="hidden" id="redirectUrl" name="redirectUrl" />
         <input type="submit" name="Submit1" value="Log In">
-        <script type="text/javascript">
-            document.getElementById('redirectUrl').value = {{return-url}};
-        </script>
     </form>
 
 

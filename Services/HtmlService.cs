@@ -12,7 +12,7 @@ namespace MadCill.BasicSiteGatingModule.Services
         private static string FormCSSClassToken = "{{form-css-token}}";
         private static string RememberMeToken = "{{isRemembermeDisabled}}";
 
-        public string LoginHtml(string messages, bool allowLifetime, string customHtmlPath, string returnUrl = null)
+        public string LoginHtml(string messages, bool allowLifetime, string customHtmlPath)
         {
             string html = string.Empty;
             if (!string.IsNullOrEmpty(customHtmlPath) && File.Exists(customHtmlPath))
@@ -21,26 +21,25 @@ namespace MadCill.BasicSiteGatingModule.Services
             }
             else
             {//fallback
-                return LoginDefaultHtml(messages, allowLifetime, returnUrl);
+                return LoginDefaultHtml(messages, allowLifetime);
             }
 
-            return BuildLoginHtml(html, messages, allowLifetime, returnUrl);
+            return BuildLoginHtml(html, messages, allowLifetime);
         }
 
-        public string LoginDefaultHtml(string messages, bool allowLifetime, string returnUrl = null)
+        public string LoginDefaultHtml(string messages, bool allowLifetime)
         {
             var html = GetResource(HtmlLoginResourceName);
-            return BuildLoginHtml(html, messages, allowLifetime, returnUrl);
+            return BuildLoginHtml(html, messages, allowLifetime);
         }
 
-        public string BuildLoginHtml(string html, string messages, bool allowLifetime, string returnUrl = null)
+        public string BuildLoginHtml(string html, string messages, bool allowLifetime)
         {
             if (!string.IsNullOrEmpty(html))
             {
                 html = html.Replace(MessagesToken, messages)
                     .Replace(FormCSSClassToken, string.IsNullOrEmpty(messages) ? string.Empty : "gating-has-messages")
-                    .Replace(RememberMeToken, (allowLifetime ? "" : "disabled"))
-                    .Replace("{{return-url}}", (string.IsNullOrEmpty(returnUrl) ? "window.location.href" : $"'{returnUrl}'"));
+                    .Replace(RememberMeToken, (allowLifetime ? "" : "disabled"));
 
                 return html;
             }
