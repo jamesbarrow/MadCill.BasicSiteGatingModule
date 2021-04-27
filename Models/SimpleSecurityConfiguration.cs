@@ -57,13 +57,13 @@ namespace MadCill.BasicSiteGatingModule.Models
 
         private string[] GetAppSettingList(NameValueCollection appSettings, string key, char separator = ';')
         {
-            return GetAppSetting(appSettings, key, string.Empty).Split(separator).Select(x => x.Trim()).ToArray();
+            return GetAppSetting(appSettings, key)?.Split(separator).Select(x => x.Trim()).ToArray();
         }
 
         private IDictionary<string, string> GetAppSettingDictionary(NameValueCollection appSettings, string key, char settingSeparator = ';', char keyValueSeparator = '|')
         {
             var settingList = GetAppSettingList(appSettings, key, settingSeparator);
-            if (settingList.Length > 0)
+            if (settingList != null && settingList.Length > 0)
             {
                 IDictionary<string, string> dictionary = new Dictionary<string, string>();
                 foreach (var setting in settingList)
@@ -93,26 +93,19 @@ namespace MadCill.BasicSiteGatingModule.Models
         {
             if (CustomLoginPath != null && CustomLoginPath.Count() > 0)
             {
-                var domainName = request?.Url?.Host?.ToLower();
+                var domainName = request?.Url?.Host?.ToLowerInvariant();
 
                 if (!string.IsNullOrEmpty(domainName))
                 {
-                    var path = string.Empty;
-
-                    if (CustomLoginPath.ContainsKey(domainName))
-                    {
-                        path = CustomLoginPath[domainName];
-                    }
-                    else
-                    {
-                        path = CustomLoginPath[DefaultDictionaryKey];
-                    }
+                    string path = CustomLoginPath.ContainsKey(domainName) ? 
+                        CustomLoginPath[domainName] 
+                        : CustomLoginPath[DefaultDictionaryKey];
 
                     if (!string.IsNullOrEmpty(path))
                     {
                         return request.MapPath(path);
                     }
-                }                
+                }
             }
 
             return string.Empty;
@@ -148,13 +141,13 @@ namespace MadCill.BasicSiteGatingModule.Models
             if (value != null && value.Length > 0)
             {
                 //select wildcards
-                var wildcards = value.Where(x => x[x.Length - 1] == '~');
+                var wildcards = value.Where(x => x.Length > 0 && x[x.Length - 1] == '~');
                 if (wildcards.Any())
                 {
                     _urlWildcardWhitelist = wildcards.Select(x => x.Substring(0, x.Length - 1)).ToArray();
                 }
 
-                _urlWhitelist = value.Where(x => x[x.Length - 1] != '~').ToArray();
+                _urlWhitelist = value.Where(x => x.Length > 0 && x[x.Length - 1] != '~').ToArray();
             }
             else
             {
@@ -170,7 +163,7 @@ namespace MadCill.BasicSiteGatingModule.Models
 
         if (!string.IsNullOrEmpty(path))
         {
-            if (_urlWhitelist.Length > 0)
+            if (_urlWhitelist != null && _urlWhitelist.Length > 0)
             {
                 if (IsWhitelisted(_urlWhitelist, path))
                 {
@@ -199,7 +192,7 @@ namespace MadCill.BasicSiteGatingModule.Models
     {
         if (!string.IsNullOrEmpty(value))
         {
-            if (whitelist.Length > 0)
+            if (whitelist != null && whitelist.Length > 0)
             {
                 if (whitelist.Any(x => x == value))
                 {

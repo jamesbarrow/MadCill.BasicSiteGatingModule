@@ -60,5 +60,8 @@
   <ItemGroup>
     <EmbeddedResource Include="Html\login.html" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="UsefulSnippets\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
