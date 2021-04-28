@@ -10,9 +10,9 @@ namespace MadCill.BasicSiteGatingModule.Services
     public class GatingService
     {
         private static string ErrorMessage = "The password was incorrect password. Please try again.";
-        private static string PostQueryString = "simplesecure";
+        //private static string PostQueryString = "simplesecure";
         private static string UserPasswordParamName = "UserPass";
-        private static string RedirectParamName = "redirectUrl";
+        private static string SiteGatingPageCheck = "SiteGating";
         private static string RememberMeParamName = "chkboxPersist";
 
         private HttpRequest Request;
@@ -41,25 +41,38 @@ namespace MadCill.BasicSiteGatingModule.Services
         {
             if (Request.HttpMethod == "POST")
             {
-                var rememberMe = Request.Form[RememberMeParamName] == "1";
-                var password = Request.Form[UserPasswordParamName];
-                //clear password check
-                if (password == Configuration.ConfiguredPassword)
+                if (Request.Form[SiteGatingPageCheck] == "1")
                 {
-                    var encryptedPassword = EncryptionService.Encrypt(Configuration.ConfiguredPassword);
-                    var cookie = new HttpCookie(Configuration.CookieName) { Value = encryptedPassword, HttpOnly = false, Secure = Request.IsSecureConnection };
-                    if (Configuration.SessionLifetime > 0
-                        && rememberMe
-                        && Configuration.SessionLifetime < 365)
+                    var rememberMe = Request.Form[RememberMeParamName] == "1";
+                    var password = Request.Form[UserPasswordParamName];
+                    //clear password check
+                    if (password == Configuration.ConfiguredPassword)
                     {
-                        cookie.Expires = DateTime.Now.AddDays(Configuration.SessionLifetime);
+                        var encryptedPassword = EncryptionService.Encrypt(Configuration.ConfiguredPassword);
+                        var cookie = new HttpCookie(Configuration.CookieName) { Value = encryptedPassword, HttpOnly = false, Secure = Request.IsSecureConnection };
+                        if (Configuration.SessionLifetime > 0
+                            && rememberMe
+                            && Configuration.SessionLifetime < 365)
+                        {
+                            cookie.Expires = DateTime.Now.AddDays(Configuration.SessionLifetime);
+                        }
+                        Response.Cookies.Add(cookie);
+                        Response.Redirect(Request.RawUrl);
                     }
-                    Response.Cookies.Add(cookie);
-                    Response.Redirect(Request.RawUrl);
+                    else
+                    {
+                        LoginResponse(ErrorMessage);
+                    }
                 }
                 else
                 {
-                    LoginResponse(ErrorMessage);
+                    var simpleSecureCookie = Request.Cookies[Configuration.CookieName];
+
+                    var encryptedPassword = EncryptionService.Encrypt(Configuration.ConfiguredPassword);
+                    if (simpleSecureCookie == null || simpleSecureCookie.Value != encryptedPassword)
+                    {
+                        LoginResponse(string.Empty);
+                    }
                 }
             }
             else
