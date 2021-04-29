@@ -92,6 +92,10 @@ namespace MadCill.BasicSiteGatingModule.Services
                     return;
                 }
 
+                //TODO: If the site is redirected to from another domain then the cookie will be missing! This means that we will show the login page even if they have access.
+                //Solution needs some thought. i.e. check referrer - if not this domain or null then we need to maybe write the encrypted password to the login page (somehow). 
+                //If this field is written to the page then, can we check it against the cookie (might not be accessible client side) or we can just post back... need to know how to check this.
+
                 var simpleSecureCookie = Request.Cookies[Configuration.CookieName];
 
                 var encryptedPassword = EncryptionService.Encrypt(Configuration.ConfiguredPassword);
