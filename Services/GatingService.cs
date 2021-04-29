@@ -41,7 +41,7 @@ namespace MadCill.BasicSiteGatingModule.Services
         {
             if (Request.HttpMethod == "POST")
             {
-                if (Request.Form[SiteGatingPageCheck] == "1")
+                if (Request.Form[SiteGatingPageCheck] == "true")
                 {
                     var rememberMe = Request.Form[RememberMeParamName] == "1";
                     var password = Request.Form[UserPasswordParamName];
@@ -64,16 +64,7 @@ namespace MadCill.BasicSiteGatingModule.Services
                         LoginResponse(ErrorMessage);
                     }
                 }
-                else
-                {
-                    var simpleSecureCookie = Request.Cookies[Configuration.CookieName];
-
-                    var encryptedPassword = EncryptionService.Encrypt(Configuration.ConfiguredPassword);
-                    if (simpleSecureCookie == null || simpleSecureCookie.Value != encryptedPassword)
-                    {
-                        LoginResponse(string.Empty);
-                    }
-                }
+                // should someone just post to a page to get access through the gating then ideally the server will reject it and the next page will be gated.
             }
             else
             {
