@@ -37,6 +37,30 @@ namespace MadCill.BasicSiteGatingModule.Services
             }   
         }
 
+        /// <summary>
+        /// Accessible method to set the site gating cookie should you want to set this based on custom code requirements. 
+        /// </summary>
+        /// <param name="rememberMe"></param>
+        /// <param name="redirect"></param>
+        public void SetAccessCookie(bool rememberMe, bool redirect = false)
+        {
+            var encryptedPassword = EncryptionService.Encrypt(Configuration.ConfiguredPassword);
+            var cookie = new HttpCookie(Configuration.CookieName) { Value = encryptedPassword, HttpOnly = false, Secure = Request.IsSecureConnection };
+            if (Configuration.SessionLifetime > 0
+                && rememberMe
+                && Configuration.SessionLifetime < 365)
+            {
+                cookie.Expires = DateTime.Now.AddDays(Configuration.SessionLifetime);
+            }
+
+            Response.Cookies.Add(cookie);
+
+            if (redirect)
+            {
+                Response.Redirect(Request.RawUrl);
+            }
+        }
+
         public void HandleGating()
         {
             if (Request.HttpMethod == "POST")
@@ -48,16 +72,7 @@ namespace MadCill.BasicSiteGatingModule.Services
                     //clear password check
                     if (password == Configuration.ConfiguredPassword)
                     {
-                        var encryptedPassword = EncryptionService.Encrypt(Configuration.ConfiguredPassword);
-                        var cookie = new HttpCookie(Configuration.CookieName) { Value = encryptedPassword, HttpOnly = false, Secure = Request.IsSecureConnection };
-                        if (Configuration.SessionLifetime > 0
-                            && rememberMe
-                            && Configuration.SessionLifetime < 365)
-                        {
-                            cookie.Expires = DateTime.Now.AddDays(Configuration.SessionLifetime);
-                        }
-                        Response.Cookies.Add(cookie);
-                        Response.Redirect(Request.RawUrl);
+                        SetAccessCookie(rememberMe, true);
                     }
                     else
                     {
