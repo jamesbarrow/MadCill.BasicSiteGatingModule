@@ -7,7 +7,15 @@ MadCill.BasicSiteGatingModule.dll
 
 **Add the following to the very top of the <webServer><modules> section of the web config: **
 ```
-<add type="MadCill.BasicSiteGatingModule.SimpleGatingModule, MadCill.BasicSiteGatingModule" name="SimpleSecurityControl" />
+<configuration>
+   <system.webServer>
+      <modules>
+         <add type="MadCill.BasicSiteGatingModule.SimpleGatingModule, MadCill.BasicSiteGatingModule" name="SimpleSecurityControl" />
+	 
+	 ...
+      </modules>
+   </system.webServer>
+</configuration>
 ```
 
 **(OPTIONAL) Add the following settings to the app config section - each param is optional, password at least, is advised**
