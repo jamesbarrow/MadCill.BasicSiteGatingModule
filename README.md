@@ -5,11 +5,13 @@ A simple HTTP Module for IIS to gate a site behind a single password. Designed t
 **Add the dll to the bin directory:**
 MadCill.BasicSiteGatingModule.dll
 
-#Add the following to the very top of the <webServer><modules> section of the web config: 
-    <add type="MadCill.BasicSiteGatingModule.SimpleGatingModule, MadCill.BasicSiteGatingModule" name="SimpleSecurityControl" />
+**Add the following to the very top of the <webServer><modules> section of the web config: **
+```
+<add type="MadCill.BasicSiteGatingModule.SimpleGatingModule, MadCill.BasicSiteGatingModule" name="SimpleSecurityControl" />
+```
 
 **(OPTIONAL) Add the following settings to the app config section - each param is optional, password at least, is advised**
-
+```
     <!--Simple Gating Section-->
     <add key="SimpleSecurity.Password" value="!password" />
     <add key="SimpleSecurity.CookieName" value="SimpleGating" />
@@ -36,3 +38,4 @@ MadCill.BasicSiteGatingModule.dll
     <!--OR Separating it in a {domain}|{path to login};{domain}|{path to login};{default login page} will allow a login page per domain
     <add key="SimpleSecurity.CustomLoginHtml" value="domain1.com|/LoginPage1.html;domain2.com|/LoginPage2.html;/LoginPage1.html" />-->
     <!--END Simple Gating Section-->
+```
