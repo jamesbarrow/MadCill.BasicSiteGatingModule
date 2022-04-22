@@ -6,7 +6,7 @@ A simple HTTP Module for IIS to gate a site behind a single password. Designed t
 MadCill.BasicSiteGatingModule.dll
 
 #Add the following to the very top of the <webServer><modules> section of the web config: 
-<add type="MadCill.BasicSiteGatingModule.SimpleGatingModule, MadCill.BasicSiteGatingModule" name="SimpleSecurityControl" />
+    <add type="MadCill.BasicSiteGatingModule.SimpleGatingModule, MadCill.BasicSiteGatingModule" name="SimpleSecurityControl" />
 
 **(OPTIONAL) Add the following settings to the app config section - each param is optional, password at least, is advised**
 
